@@ -4,45 +4,58 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a0c14">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Energy Aurora · Loading…</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Energy Aurora · v5.4.24</title>
 <link rel="manifest" href="manifest.webmanifest">
 <style>
   html,body{margin:0;height:100%;background:#05060a;color:#94a3b8;
     font-family:system-ui,-apple-system,sans-serif;
     display:flex;align-items:center;justify-content:center}
-  #s{text-align:center;padding:24px;font-size:0.95rem;line-height:1.5}
+  #s{text-align:center;padding:24px;font-size:0.95rem;line-height:1.5;max-width:320px}
   .spin{display:inline-block;width:28px;height:28px;margin-bottom:12px;
     border:2px solid #1e293b;border-top-color:#34d399;border-radius:50%;
     animation:r .7s linear infinite}
   @keyframes r{to{transform:rotate(360deg)}}
   .err{color:#f87171}
+  code{font-size:0.7rem;color:#64748b}
 </style>
 </head>
 <body>
 <div id="s">
-  <div class="spin" aria-hidden="true"></div>
-  <div>Đang tải Energy Aurora…</div>
-  <div style="font-size:0.75rem;opacity:.7;margin-top:8px">App1.b64 → v5.4.24</div>
+  <div class="spin"></div>
+  <div><b>Energy Aurora v5.4.24</b></div>
+  <div style="font-size:0.8rem;margin-top:6px">Đang giải mã App1.b64…</div>
+  <div id="p" style="font-size:0.7rem;opacity:.6;margin-top:8px"></div>
 </div>
 <script>
 (async function () {
   var el = document.getElementById('s');
+  var p = document.getElementById('p');
   try {
-    var r = await fetch('App1.b64', { cache: 'no-store' });
-    if (!r.ok) throw new Error('HTTP ' + r.status + ' khi tải App1.b64');
+    var url = 'App1.b64?v=524-' + Date.now();
+    p.textContent = 'fetch…';
+    var r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    p.textContent = 'decode base64…';
     var b64 = (await r.text()).replace(/\s+/g, '');
     var bin = atob(b64);
     var bytes = new Uint8Array(bin.length);
     for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    p.textContent = 'UTF-8 ' + (bytes.length/1e6).toFixed(2) + ' MB…';
     var html = new TextDecoder('utf-8').decode(bytes);
+    if (html.indexOf('normalizePrice') < 0 || html.indexOf('thuongmai') < 0) {
+      throw new Error('App1.b64 không phải bản v5.4.24 (thiếu normalizePrice/TTH)');
+    }
+    html = html.replace('<body>', '<body data-aurora-ver="5.4.24" data-build="2026-08-21">', 1);
     document.open();
     document.write(html);
     document.close();
   } catch (e) {
-    el.innerHTML = '<div class="err">Không tải được app.</div>'
+    el.innerHTML = '<div class="err">Lỗi tải app</div>'
       + '<div style="margin-top:10px;font-size:0.8rem">' + (e && e.message ? e.message : e) + '</div>'
-      + '<div style="margin-top:12px;font-size:0.75rem;opacity:.8">Kiểm tra file App1.b64 trên repo hoặc mở lại trang.</div>';
+      + '<div style="margin-top:14px"><code>App1.b64</code> phải là bản mới trên repo.</div>';
   }
 })();
 </script>
