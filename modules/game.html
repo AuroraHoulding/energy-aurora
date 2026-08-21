@@ -6,24 +6,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <style>
   body { font-family: system-ui, sans-serif; background:#0a0c14; color:#e2e8f0; padding:12px; }
-  .module-banner { background:linear-gradient(90deg,#1e3a5f,#0f766e); padding:10px 14px; border-radius:10px; margin-bottom:16px; font-size:14px; }
-  .module-banner a { color:#7dd3fc; }
-  h1 { font-size:1.4rem; margin:0 0 8px; }
-  .card { background:#111827; border:1px solid #1f2937; border-radius:12px; padding:14px; margin-bottom:12px; }
-  button { background:#0ea5e9; color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
-  button:hover { background:#0284c7; }
-  .muted { color:#94a3b8; font-size:13px; }
+  .module-banner { font-size:0.75rem; color:#94a3b8; margin-bottom:12px; padding:8px; border:1px dashed rgba(251,191,36,0.4); border-radius:8px; }
 </style>
 </head>
 <body>
-  <div class="module-banner">
-    ← <a href="../index.html">Quay về trang chính</a> · Module Game
-  </div>
-  <h1>⚡ Energy Tycoon Game</h1>
-  <p class="muted">Module game đang được tách riêng. Nội dung đầy đủ sẽ được cập nhật.</p>
-  <div class="card">
-    <p>Đây là phiên bản modular. File gốc đã được tách thành nhiều phần để dễ bảo trì.</p>
-    <button onclick="alert('Game module loaded!')">Test Module</button>
-  </div>
+<div class="module-banner">📦 Module <b>Game Energy Tycoon</b></div>
+<div id="module-game-root" data-aurora-module="game">
+<!-- MODULE: Energy Tycoon Game -->
+<div id="energyGamePlaceholder"></div>
+<div class="hidden" id="energyGameApp">
+<div id="egAppBar">
+<span class="eg-logo">⚡ Energy Tycoon</span>
+<button class="eg-tab active" data-eg="overview" type="button">Tổng quan</button>
+<button class="eg-tab" data-eg="shop" type="button">Shop</button>
+<button class="eg-tab" data-eg="plants" type="button">Nhà máy</button>
+<button class="eg-tab" data-eg="report" type="button">Báo cáo</button>
+<button class="eg-tab" data-eg="loan" type="button">Vay vốn</button>
+</div>
+<div id="egAppBody">
+<!-- Màn Tổng quan -->
+<div class="eg-screen active" id="egScreenOverview">
+<div class="eg-stats-row">
+<div class="eg-stat-card"><label>Tiền mặt</label><b class="money" id="egMoney">0 ₫</b></div>
+<div class="eg-stat-card"><label>Điện tồn</label><b class="coal" id="egPowerStat" style="color:#67e8f9">0 MWh</b></div>
+<div class="eg-stat-card"><label>Thợ (tự do/tổng)</label><b class="workers" id="egWorkers">0/0</b></div>
+<div class="eg-stat-card"><label>Thời gian</label><b class="day" id="egDay">Ngày 1</b></div>
+</div>
+<div class="eg-stats-row" style="margin-top:6px">
+<div class="eg-stat-card"><label>Nợ vay</label><b id="egDebtTotal" style="color:#f87171">0 ₫</b></div>
+<div class="eg-stat-card"><label>Lãi tháng</label><b id="egDebtInterest" style="color:#fbbf24">0 ₫</b></div>
+<div class="eg-stat-card"><label>Kinh nghiệm</label><b id="egXP" style="color:#a78bfa">0</b></div>
+<div class="eg-stat-card"><label>Cảnh báo nợ</label><b id="egDebtWarn" style="color:#94a3b8">—</b></div>
+</div>
+<!-- Sân chơi trực quan: thợ / nhà máy xuất hiện -->
+<div aria-label="Sân chơi Energy Tycoon 12 khu" class="eg-world" id="egWorld">
+<div class="eg-world-sky"></div>
+<div aria-hidden="true" class="eg-world-sun"></div>
+<div aria-hidden="true" class="eg-world-moon"></div>
+<div class="eg-world-season" id="egWorldSeason">🌸 Xuân</div>
+<div class="eg-world-tod" id="egWorldTod">☀️ Ngày</div>
+<div class="eg-world-ground"></div>
+<div class="eg-world-grid" id="egWorldGrid"></div>
+</div>
+<div class="eg-actions">
+<button class="eg-btn" id="egBtnNextDay" type="button">➡️ Ngày tiếp theo</button>
+<button class="eg-btn secondary" id="egBtnSave" type="button">💾 Lưu</button>
+<button class="eg-btn secondary" id="egBtnLoad" type="button">📂 Tải</button>
+</div>
+</div>
+<!-- Other screens would be here in full version -->
+</div>
+</div>
+</div>
+<script>
+// Full game logic is in the original module. This is the structure.
+console.log('Energy Tycoon Game module loaded');
+</script>
 </body>
 </html>
