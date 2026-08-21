@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<title>Aurora · Energy Tycoon Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  body { font-family: system-ui, sans-serif; background:#0a0c14; color:#e2e8f0; padding:12px; }
+  .module-banner { font-size:0.75rem; color:#94a3b8; margin-bottom:12px; padding:8px; border:1px dashed rgba(251,191,36,0.4); border-radius:8px; }
+</style>
+</head>
+<body>
+<div class="module-banner">📦 Module <b>Game Energy Tycoon</b></div>
+<div id="module-game-root" data-aurora-module="game">
+<!-- MODULE: Energy Tycoon Game -->
+<div id="energyGamePlaceholder"></div>
+<div class="hidden" id="energyGameApp">
+<div id="egAppBar">
+<span class="eg-logo">⚡ Energy Tycoon</span>
+<button class="eg-tab active" data-eg="overview" type="button">Tổng quan</button>
+<button class="eg-tab" data-eg="shop" type="button">Shop</button>
+<button class="eg-tab" data-eg="plants" type="button">Nhà máy</button>
+<button class="eg-tab" data-eg="report" type="button">Báo cáo</button>
+<button class="eg-tab" data-eg="loan" type="button">Vay vốn</button>
+</div>
+<div id="egAppBody">
+<!-- Màn Tổng quan -->
+<div class="eg-screen active" id="egScreenOverview">
+<div class="eg-stats-row">
+<div class="eg-stat-card"><label>Tiền mặt</label><b class="money" id="egMoney">0 ₫</b></div>
+<div class="eg-stat-card"><label>Điện tồn</label><b class="coal" id="egPowerStat" style="color:#67e8f9">0 MWh</b></div>
+<div class="eg-stat-card"><label>Thợ (tự do/tổng)</label><b class="workers" id="egWorkers">0/0</b></div>
+<div class="eg-stat-card"><label>Thời gian</label><b class="day" id="egDay">Ngày 1</b></div>
+</div>
+<div class="eg-stats-row" style="margin-top:6px">
+<div class="eg-stat-card"><label>Nợ vay</label><b id="egDebtTotal" style="color:#f87171">0 ₫</b></div>
+<div class="eg-stat-card"><label>Lãi tháng</label><b id="egDebtInterest" style="color:#fbbf24">0 ₫</b></div>
+<div class="eg-stat-card"><label>Kinh nghiệm</label><b id="egXP" style="color:#a78bfa">0</b></div>
+<div class="eg-stat-card"><label>Cảnh báo nợ</label><b id="egDebtWarn" style="color:#94a3b8">—</b></div>
+</div>
+<!-- Sân chơi trực quan: thợ / nhà máy xuất hiện -->
+<div aria-label="Sân chơi Energy Tycoon 12 khu" class="eg-world" id="egWorld">
+<div class="eg-world-sky"></div>
+<div aria-hidden="true" class="eg-world-sun"></div>
+<div aria-hidden="true" class="eg-world-moon"></div>
+<div class="eg-world-season" id="egWorldSeason">🌸 Xuân</div>
+<div class="eg-world-tod" id="egWorldTod">☀️ Ban ngày</div>
+<div class="eg-zones" id="egZones">
+<div class="eg-zone zone-coal" data-zone="coal"><div class="eg-zone-icons" id="zIcons-coal"></div></div>
+<div class="eg-zone zone-thermal" data-zone="thermal"><div class="eg-zone-icons" id="zIcons-thermal"></div></div>
+<div class="eg-zone zone-hydro" data-zone="hydro"><div class="eg-zone-icons" id="zIcons-hydro"></div></div>
+<div class="eg-zone zone-gas" data-zone="gas"><div class="eg-zone-icons" id="zIcons-gas"></div></div>
+<div class="eg-zone zone-oil" data-zone="oil"><div class="eg-zone-icons" id="zIcons-oil"></div></div>
+<div class="eg-zone zone-solar" data-zone="solar"><div class="eg-zone-icons" id="zIcons-solar"></div></div>
+<div class="eg-zone zone-wind" data-zone="wind"><div class="eg-zone-icons" id="zIcons-wind"></div></div>
+<div class="eg-zone zone-nuclear" data-zone="nuclear"><div class="eg-zone-icons" id="zIcons-nuclear"></div></div>
+<div class="eg-zone zone-storage" data-zone="storage"><div class="eg-zone-icons" id="zIcons-storage"></div></div>
+<div class="eg-zone zone-grid" data-zone="grid"><div class="eg-zone-icons" id="zIcons-grid"></div></div>
+<div class="eg-zone zone-support" data-zone="support"><div class="eg-zone-icons" id="zIcons-support"></div></div>
+<div class="eg-zone zone-coal" data-zone="logistics"><div class="eg-zone-icons" id="zIcons-logistics"></div></div>
+</div>
+<div class="eg-world-empty-hint" id="egWorldEmpty">12 khu trống — vào Shop mua nhà máy / thuê thợ để mọc công trình</div>
+<div class="eg-world-road">
+<div class="eg-road-entities" id="egRoadEntities"></div>
+</div>
+</div>
+<div class="eg-actions-compact">
+<button class="eg-btn primary eg-btn-sm" id="egAdvanceBtn" title="+1 ngày" type="button">▶ +1 ngày</button>
+<button class="eg-btn eg-btn-sm" id="egSellAllBtn" title="Bán hết tồn kho" type="button">💰 Bán tất cả</button>
+</div>
+<div class="eg-inv-row" id="egInvRow">
+<span class="eg-inv-chip">🪨 Than <b id="egInvCoal">0</b></span>
+<span class="eg-inv-chip">⚡ Điện <b id="egInvPower">0</b> MWh</span>
+<span class="eg-inv-chip">🛢️ Dầu <b id="egInvOil">0</b></span>
+<span class="eg-inv-chip">💨 Khí <b id="egInvGas">0</b></span>
+<span class="eg-inv-chip">🔋 Pin <b id="egInvBatt">0</b> MWh</span>
+<span class="eg-inv-chip">📋 DV <b id="egInvSvc">0</b></span>
+</div>
+<div class="eg-market" id="egMarket">
+<div class="eg-mkt-card">
+<div class="mk-title">🪨 Than</div>
+<div class="mk-stock">Tồn: <span id="egMktCoalStock">0 tấn</span></div>
+<div class="mk-price" id="egCoalPrice">2.100.000 ₫/tấn</div>
+<button disabled="" id="egSellBtn" type="button">Bán than</button>
+</div>
+<div class="eg-mkt-card">
+<div class="mk-title">⚡ Điện</div>
+<div class="mk-stock">Tồn: <span id="egMktPowerStock">0 MWh</span></div>
+<div class="mk-price" id="egPowerPrice">—</div>
+<button disabled="" id="egSellPowerBtn" type="button">Bán điện</button>
+</div>
+<div class="eg-mkt-card">
+<div class="mk-title">🛢️ Xăng / dầu</div>
+<div class="mk-stock">Tồn: <span id="egMktOilStock">0</span></div>
+<div class="mk-price" id="egOilPrice">—</div>
+<button disabled="" id="egSellOilBtn" type="button">Bán dầu</button>
+</div>
+<div class="eg-mkt-card">
+<div class="mk-title">💨 Khí / LNG</div>
+<div class="mk-stock">Tồn: <span id="egMktGasStock">0</span></div>
+<div class="mk-price" id="egGasPrice">—</div>
+<button disabled="" id="egSellGasBtn" type="button">Bán khí</button>
+</div>
+<div class="eg-mkt-card">
+<div class="mk-title">🔋 Pin / BESS</div>
+<div class="mk-stock">Tồn: <span id="egMktBattStock">0 MWh</span></div>
+<div class="mk-price" id="egBattPrice">—</div>
+<button disabled="" id="egSellBattBtn" type="button">Bán điện lưu</button>
+</div>
+<div class="eg-mkt-card">
+<div class="mk-title">📋 Dịch vụ EPC</div>
+<div class="mk-stock">Hợp đồng: <span id="egMktSvcStock">0</span></div>
+<div class="mk-price" id="egSvcPrice">—</div>
+<button disabled="" id="egSellSvcBtn" type="button">Thu phí DV</button>
+</div>
+</div>
+<div style="font-size:0.48rem;color:#64748b;margin:2px 0 4px;line-height:1.3">
+          Game <b style="color:#86efac">tự chạy</b> (10s = 1 ngày) · Mỗi ngày sân “nhìn” một khu khác
+        </div>
+<div style="font-size:0.52rem;color:#94a3b8;margin-bottom:4px;line-height:1.35">
+          Chi phí/tháng: <b id="egMonthlyCost">0 ₫</b> ·
+          Kho than: <b id="egWarehouseCap" style="color:#67e8f9">0 tấn</b>
+</div>
+<div class="eg-log-box" id="egLog"></div>
+<p style="font-size:0.52rem;color:#64748b;margin-top:8px;line-height:1.4">
+<b>Quy tắc:</b> Bắt đầu với <b>0 ₫</b>. Vay người thân → thuê → bán → <b>trả lãi/trả gốc</b> (tab Vay vốn) → tái đầu tư.
+          Game <b>tự chạy</b> 10s = 1 ngày. Nợ trễ ≥2 kỳ → cảnh báo.
+        </p>
+<div class="eg-system-bar">
+<button class="eg-btn eg-btn-sm" id="egSaveBtn" title="Lưu vào máy" type="button">💾 Lưu</button>
+<button class="eg-btn eg-btn-sm" id="egLoadBtn" title="Tải bản đã lưu" type="button">📂 Tải</button>
+<button class="eg-btn eg-btn-sm" id="egBankruptBtn" style="border-color:#ef4444;color:#f87171" title="Phá sản – reset" type="button">🌉 Nhảy cầu</button>
+<span id="egSaveHint" style="font-size:0.45rem;color:#64748b;flex:1;min-width:80px">Lưu trên máy · không cần file</span>
+</div>
+</div>
+<!-- Màn Shop -->
+<div class="eg-screen" id="egScreenShop">
+<p style="font-size:0.58rem;color:#94a3b8;margin-bottom:6px">Shop đầy đủ máy móc / nhà máy theo 12 nhóm ngành (có điện hạt nhân). Lọc theo nhóm hoặc xem tất cả.</p>
+<div id="egShopCats" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px"></div>
+<div class="eg-shop-grid" id="egShopList"></div>
+</div>
+<!-- Màn Nhà máy -->
+<div class="eg-screen" id="egScreenPlants">
+<p style="font-size:0.58rem;color:#94a3b8;margin-bottom:6px">Tài sản &amp; công suất đang sở hữu — xem trực quan trên sân bên dưới.</p>
+<div aria-label="Sân nhà máy" class="eg-world eg-world-plants focus-mine" id="egWorldPlants">
+<div class="eg-world-sky"></div>
+<div aria-hidden="true" class="eg-world-sun"></div>
+<div aria-hidden="true" class="eg-world-moon"></div>
+<div aria-hidden="true" class="eg-world-focus"></div>
+<div aria-hidden="true" class="eg-world-water"></div>
+<div class="eg-world-ground"></div>
+<div aria-hidden="true" class="eg-world-road"></div>
+<div class="eg-world-label">🏭 Khu nhà máy</div>
+<div class="eg-world-tod" id="egWorldPlantsTod">☀️ Ban ngày</div>
+<div class="eg-world-focus-name" id="egWorldPlantsFocusName">◉ Khu mỏ</div>
+<div class="eg-world-empty" id="egWorldPlantsEmpty">Chưa có nhà máy / mỏ. Vào Shop đầu tư để mọc công trình tại đây.</div>
+<div id="egWorldPlantsEntities"></div>
+</div>
+<div id="egPlantsList" style="margin-top:8px"><div style="color:#64748b;font-size:0.6rem">Chưa có nhà máy / mỏ. Vào Shop đầu tư.</div></div>
+</div>
+<!-- Màn Báo cáo -->
+<div class="eg-screen" id="egScreenReport">
+<p style="font-size:0.58rem;color:#94a3b8;margin-bottom:8px">Báo cáo thu chi · nợ · dòng tiền (nền tảng hiểu BCTC thật).</p>
+<div id="egReportBox" style="font-size:0.6rem;line-height:1.55">
+<div><b style="color:#67e8f9">═══ KẾT QUẢ KINH DOANH ═══</b></div>
+<div>Doanh thu lũy kế: <b id="egTotalRev">0 ₫</b></div>
+<div>Chi phí vận hành lũy kế: <b id="egTotalCost">0 ₫</b></div>
+<div>Chi phí lãi vay lũy kế: <b id="egInterestPaid">0 ₫</b></div>
+<div>Lợi nhuận (ước): <b id="egProfit">0 ₫</b></div>
+<div style="margin-top:8px"><b style="color:#fbbf24">═══ BẢNG CÂN ĐỐI (đơn giản) ═══</b></div>
+<div>Tiền mặt: <b id="egRptMoney">0 ₫</b></div>
+<div>Tồn kho than: <b id="egRptCoal">0 tấn</b></div>
+<div>Tổng nợ vay: <b id="egRptDebt" style="color:#f87171">0 ₫</b></div>
+<div>Vốn chủ sở hữu (ước): <b id="egRptEquity">0 ₫</b></div>
+<div style="margin-top:8px"><b style="color:#86efac">═══ DÒNG TIỀN ═══</b></div>
+<div>Than đã bán: <span id="egCoalSold">0</span> tấn</div>
+<div>Thời gian chơi: <span id="egRptTime">—</span></div>
+<div>Kinh nghiệm giữ qua lần nhảy cầu: <span id="egRptXP">0</span></div>
+</div>
+</div>
+<!-- Màn Vay vốn -->
+<div class="eg-screen" id="egScreenLoan">
+<p style="font-size:0.58rem;color:#94a3b8;margin-bottom:8px;line-height:1.45">
+<b>Cách trả nợ:</b> (1) <b>Trả lãi</b> mỗi tháng để không bị ghi nợ xấu ·
+          (2) <b>Trả gốc từng khoản</b> bên dưới (gõ số tiền → Trả gốc) ·
+          (3) <b>Tất toán</b> = trả hết một lần nếu đủ tiền.<br/>
+          Bắt đầu chỉ vay được <b>Người thân (1%/tháng)</b>. Gói khác mở dần theo ngày chơi &amp; tài sản.
+        </p>
+<div style="margin-bottom:12px;padding:10px;background:rgba(239,68,68,0.12);border:1px solid rgba(248,113,113,0.35);border-radius:12px;font-size:0.6rem">
+<button aria-expanded="false" class="eg-loan-toggle" id="egLoanToggle" type="button">
+<span>📋 Hợp đồng vay</span>
+<span class="eg-loan-badge" id="egLoanCountBadge">0</span>
+<span id="egLoanToggleChevron" style="margin-left:auto">▸</span>
+</button>
+<div id="egLoanPanel" style="display:none;margin-top:8px">
+<div id="egActiveLoans" style="color:#cbd5e1">Chưa vay khoản nào.</div>
+<div class="eg-loan-actions" style="margin-top:10px">
+<button class="eg-btn primary eg-btn-sm" id="egPayInterestBtn" type="button">💵 Trả lãi tháng</button>
+<button class="eg-btn eg-btn-sm" id="egPayAllBtn" type="button">✅ Tất toán hết</button>
+</div>
+<p style="margin-top:8px;font-size:0.5rem;color:#94a3b8;line-height:1.35">
+              Mỗi 30 ngày game <b>tự trừ lãi</b>. Không đủ tiền → kỳ trễ. Trễ ≥2 kỳ = nợ xấu.
+            </p>
+</div>
+<div id="egLoanSummaryMini" style="margin-top:6px;font-size:0.55rem;color:#94a3b8">
+            Tổng nợ: <b id="egLoanSumDebt" style="color:#f87171">0 ₫</b> · Lãi/tháng: <b id="egLoanSumInt" style="color:#fbbf24">0 ₫</b>
+<span style="opacity:0.8"> · Chạm “Hợp đồng vay” để mở</span>
+</div>
+</div>
+<b style="font-size:0.62rem;color:#fbbf24">💳 Các gói vay</b>
+<div id="egLoanProducts" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+</div>
+</div>
+</div>
+<div aria-label="Thư mục ngành" id="folderDock">
+<button class="folder-tile active" data-folder="all" style="--fold-c:#a78bfa" type="button">
+<span class="fi">📂</span><span class="fn">Tất cả</span><span class="fc" id="folderCountAll">121</span>
+</button>
+<button class="folder-tile" data-folder="oilgas" style="--fold-c:#fbbf24" type="button">
+<span class="fi">🛢️</span><span class="fn">Dầu khí</span><span class="fc">16</span>
+</button>
+<button class="folder-tile" data-folder="khi" style="--fold-c:#34d399" type="button">
+<span class="fi">🔥</span><span class="fn">Khí &amp; LPG</span><span class="fc">8</span>
+</button>
+<button class="folder-tile" data-folder="xangdau" style="--fold-c:#fb923c" type="button">
+<span class="fi">⛽</span><span class="fn">Xăng dầu</span><span class="fc">11</span>
+</button>
+<button class="folder-tile" data-folder="nhiet" style="--fold-c:#f87171" type="button">
+<span class="fi">⚡</span><span class="fn">Nhiệt điện</span><span class="fc">22</span>
+</button>
+<button class="folder-tile" data-folder="thuy" style="--fold-c:#38bdf8" type="button">
+<span class="fi">💧</span><span class="fn">Thủy điện</span><span class="fc">29</span>
+</button>
+<button class="folder-tile" data-folder="re" style="--fold-c:#4ade80" type="button">
+<span class="fi">🌿</span><span class="fn">NLTT</span><span class="fc">11</span>
+</button>
+<button class="folder-tile" data-folder="than" style="--fold-c:#a3a3a3" type="button">
+<span class="fi">🪨</span><span class="fn">Than</span><span class="fc">12</span>
+</button>
+<button class="folder-tile" data-folder="epc" style="--fold-c:#c084fc" type="button">
+<span class="fi">🏗️</span><span class="fn">EPC / XL điện</span><span class="fc">9</span>
+</button>
+<button class="folder-tile" data-folder="pin" style="--fold-c:#f472b6" type="button">
+<span class="fi">🔋</span><span class="fn">Pin &amp; lưu trữ</span><span class="fc">2</span>
+</button>
+<button class="folder-tile" data-folder="hatnhan" style="--fold-c:#818cf8" type="button">
+<span class="fi">☢️</span><span class="fn">Điện hạt nhân</span><span class="fc">1</span>
+</button>
+</div>
+<p id="folderHint">Chạm thư mục = lọc ngành (đã tách rõ) · Bốc: ngành → 3 mã → chốt 1 mã</p>
+<div id="stageHud"><span class="stage-label">—</span> · <span class="stage-picks">—</span></div>
+<button aria-label="Thoát" hidden="" id="stageExitFab" style="display:none!important" type="button">✕</button>
+</div>
+</body>
+</html>
