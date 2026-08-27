@@ -1,15 +1,17 @@
-/* Energy Aurora – simple offline cache for single-page app */
+/* Energy Aurora – offline cache */
 const CACHE = 'energy-aurora-v5.4.24';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './sw.js'
+  './sw.js',
+  './Energy_Aurora_MaxCoverage%206.html',
+  './Energy_Aurora_MaxCoverage 6.html'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((cache) => cache.addAll(ASSETS).catch(() => {})).then(() => self.skipWaiting())
   );
 });
 
@@ -29,11 +31,11 @@ self.addEventListener('fetch', (event) => {
       if (cached) return cached;
       return fetch(req).then((res) => {
         const copy = res.clone();
-        if (res.ok && (req.url.includes(self.location.origin))) {
+        if (res.ok && req.url.includes(self.location.origin)) {
           caches.open(CACHE).then((cache) => cache.put(req, copy)).catch(() => {});
         }
         return res;
-      }).catch(() => cached || new Response('Offline', { status: 503, statusText: 'Offline' }));
+      }).catch(() => cached || new Response('Offline', { status: 503 }));
     })
   );
 });
