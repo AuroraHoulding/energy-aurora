@@ -1,12 +1,13 @@
 /* Energy Aurora – offline cache */
-const CACHE = 'energy-aurora-v5.4.24';
+const CACHE = 'energy-aurora-v5.4.25';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './sw.js',
   './Energy_Aurora_MaxCoverage%206.html',
-  './Energy_Aurora_MaxCoverage 6.html'
+  './Energy_Aurora_MaxCoverage 6.html',
+  encodeURI('./ index.html')
 ];
 
 self.addEventListener('install', (event) => {
